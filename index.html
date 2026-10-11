@@ -232,20 +232,17 @@
         </div>
 
         <div id="reprovacaoAlert" class="alert-box" style="display:none;">
-            <strong>Atenção:</strong> Desempenho "Insatisfatório" em um ou mais testes individuais (Art. 30 da NSCA 54-3)[cite: 9].
+            <strong>Atenção:</strong> Desempenho "Insatisfatório" em um ou mais testes individuais (Art. 30 da NSCA 54-3).
         </div>
     </div>
 </div>
 
 <script>
-// Funções de cálculo baseadas estritamente nas tabelas oficiais da NSCA 54-3 (Anexo VI)
-
 function calcularPontosCintura(sexo, estatura, cintura) {
     if (sexo === 'M') {
         if (cintura >= 99.0) return 0.0;
         if (cintura <= 86.5) return 30.0;
         if (cintura >= 98.5) return 6.0;
-        // Interpolação exata decrescente da tabela masculina OIC 01
         let pts = 30.0 - ((cintura - 86.5) / (98.5 - 86.5)) * 24.0;
         return Math.max(6.0, Math.min(30.0, pts));
     } else {
@@ -266,7 +263,6 @@ function calcularPontosFlexao(sexo, idade, rep) {
         let pts = 2.0 + ((rep - minRep) / (maxRep - minRep)) * 8.0;
         return Math.max(2.0, Math.min(10.0, pts));
     } else {
-        // Tabela OIC 06 - Sem apoio dos joelhos (Feminino 2026)
         let minRepF = (idade <= 21) ? 11 : (idade <= 25) ? 12 : (idade <= 29) ? 11 : (idade <= 33) ? 10 : (idade <= 37) ? 9 : (idade <= 41) ? 8 : (idade <= 45) ? 7 : (idade <= 49) ? 6 : 5;
         let maxRepF = 26;
         if (rep < minRepF) return 0.0;
