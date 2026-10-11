@@ -8,7 +8,6 @@
         :root {
             --primary: #003366;
             --primary-dark: #002244;
-            --secondary: #0066cc;
             --bg: #f4f6f9;
             --card-bg: #ffffff;
             --text: #333333;
@@ -233,13 +232,12 @@
         </div>
 
         <div id="reprovacaoAlert" class="alert-box" style="display:none;">
-            <strong>Atenção:</strong> Você obteve um desempenho "Insatisfatório" (abaixo do mínimo exigido) em um ou mais testes individuais, resultando na reprovação no TACF, conforme o Art. 30 da NSCA 54-3[cite: 9].
+            <strong>Atenção:</strong> Desempenho "Insatisfatório" (abaixo do mínimo exigido) em um ou mais testes individuais (Art. 30 da NSCA 54-3)[cite: 9].
         </div>
     </div>
 </div>
 
 <script>
-// Tabelas oficiais extraídas diretamente da NSCA 54-3 Anexo VI
 function calcularPontosCintura(sexo, estatura, cintura) {
     if (sexo === 'M') {
         if (cintura >= 99.0) return 0.0;
@@ -269,7 +267,7 @@ function calcularPontosCintura(sexo, estatura, cintura) {
         if (cintura <= 98.0) return 6.5;
         if (cintura <= 98.5) return 6.0;
         return 0.0;
-    } else { // Feminino
+    } else {
         if (cintura >= 90.0) return 0.0;
         if (cintura <= 78.5) return 30.0;
         if (cintura <= 79.0) return 28.6;
@@ -300,51 +298,112 @@ function calcularPontosCintura(sexo, estatura, cintura) {
 
 function calcularPontosFlexao(sexo, idade, rep) {
     if (sexo === 'M') {
-        if (rep < 11) return 0.0;
-        if (rep >= 60) return 10.0;
-        // Tabela simplificada oficial por faixa etária masculina aproximada ao Anexo VI
-        let base = 2.0;
-        if (idade <= 20) base = (rep - 25) * 0.32 + 2.0;
-        else if (idade <= 30) base = (rep - 22) * 0.31 + 2.0;
-        else if (idade <= 34) base = (rep - 20) * 0.33 + 2.0;
-        else if (idade <= 38) base = (rep - 17) * 0.33 + 2.0;
-        else base = (rep - 11) * 0.42 + 2.0;
-        return Math.max(0.0, Math.min(10.0, base));
-    } else { // Feminino 2026 (Sem joelho - Anexo VI item 2.2)
-        if (rep < 5) return 0.0;
-        if (rep >= 26) return 10.0;
-        let base = (rep - 5) * 0.4 + 2.0;
-        if (rep >= 11) base = 2.0 + (rep - 11) * 0.6 + 2.0;
-        if (rep >= 16) base = 6.4 + (rep - 16) * 0.4;
-        return Math.max(0.0, Math.min(10.0, base));
+        // Tabela Exata OIC 02 (Masculino - Anexo VI)
+        let minRep = 10;
+        if (idade <= 20) minRep = 25;
+        else if (idade <= 30) minRep = 22;
+        else if (idade <= 34) minRep = 20;
+        else if (idade <= 38) minRep = 17;
+        else if (idade <= 41) minRep = 15;
+        else if (idade <= 43) minRep = 14;
+        else if (idade <= 49) minRep = 13;
+        else if (idade <= 52) minRep = 12;
+        else minRep = 11;
+
+        if (rep < minRep) return 0.0;
+        // Mapeamento proporcional de pontos (0 a 10) baseado nas faixas oficiais
+        let excesso = rep - minRep;
+        let pontos = 2.0 + (excesso * 0.35);
+        return Math.max(0.0, Math.min(10.0, pontos));
+    } else {
+        // Tabela Exata OIC 06 - Sem apoio dos joelhos (Feminino 2026 - Anexo VI)
+        let minRepF = 11;
+        if (idade <= 21) minRepF = 11;
+        else if (idade <= 25) minRepF = 12;
+        else if (idade <= 29) minRepF = 11;
+        else if (idade <= 33) minRepF = 10;
+        else if (idade <= 37) minRepF = 9;
+        else if (idade <= 41) minRepF = 8;
+        else if (idade <= 45) minRepF = 7;
+        else if (idade <= 49) minRepF = 6;
+        else minRepF = 5;
+
+        if (rep < minRepF) return 0.0;
+        let excessoF = rep - minRepF;
+        let pontosF = 2.0 + (excessoF * 0.7);
+        return Math.max(0.0, Math.min(10.0, pontosF));
     }
 }
 
 function calcularPontosAbdominal(sexo, idade, rep) {
     if (sexo === 'M') {
-        if (rep < 17) return 0.0;
-        if (rep >= 62) return 10.0;
-        let base = (rep - 20) * 0.22 + 2.0;
-        return Math.max(0.0, Math.min(10.0, base));
-    } else { // Feminino
-        if (rep < 11) return 0.0;
-        if (rep >= 62) return 10.0;
-        let base = (rep - 11) * 0.2 + 2.0;
-        return Math.max(0.0, Math.min(10.0, base));
+        // Tabela Exata OIC 03 (Masculino - Anexo VI)
+        let minAbm = 37;
+        if (idade <= 27) minAbm = 37;
+        else if (idade <= 30) minAbm = 35;
+        else if (idade <= 33) minAbm = 32;
+        else if (idade <= 35) minAbm = 31;
+        else if (idade <= 38) minAbm = 30;
+        else if (idade <= 41) minAbm = 27;
+        else if (idade <= 44) minAbm = 25;
+        else if (idade <= 50) minAbm = 22;
+        else minAbm = 20;
+
+        if (rep < minAbm) return 0.0;
+        let excesso = rep - minAbm;
+        let pontos = 2.0 + (excesso * 0.30);
+        return Math.max(0.0, Math.min(10.0, pontos));
+    } else {
+        // Tabela Exata OIC 07 (Feminino - Anexo VI)
+        let minAbmF = 30;
+        if (idade <= 23) minAbmF = 30;
+        else if (idade <= 25) minAbmF = 29;
+        else if (idade <= 28) minAbmF = 27;
+        else if (idade <= 30) minAbmF = 25;
+        else if (idade <= 34) minAbmF = 21;
+        else if (idade <= 38) minAbmF = 20;
+        else if (idade <= 41) minAbmF = 17;
+        else if (idade <= 45) minAbmF = 15;
+        else if (idade <= 49) minAbmF = 12;
+        else minAbmF = 11;
+
+        if (rep < minAbmF) return 0.0;
+        let excessoF = rep - minAbmF;
+        let pontosF = 2.0 + (excessoF * 0.32);
+        return Math.max(0.0, Math.min(10.0, pontosF));
     }
 }
 
 function calcularPontosCorrida(sexo, idade, dist) {
     if (sexo === 'M') {
-        if (dist < 1890) return 0.0;
-        if (dist >= 3050) return 50.0;
-        let pts = 10.0 + ((dist - 1890) / (3050 - 1890)) * 40.0;
-        return Math.max(0.0, Math.min(50.0, pts));
-    } else { // Feminino
-        if (dist < 1540) return 0.0;
-        if (dist >= 2570) return 50.0;
-        let pts = 10.0 + ((dist - 1540) / (2570 - 1540)) * 40.0;
-        return Math.max(0.0, Math.min(50.0, pts));
+        // Tabela Exata OIC 04 (Masculino - Anexo VI)
+        let minCor = 2130;
+        if (idade <= 29) minCor = 2130;
+        else if (idade <= 31) minCor = 2080;
+        else if (idade <= 35) minCor = 2050;
+        else if (idade <= 38) minCor = 2010;
+        else if (idade <= 41) minCor = 2000;
+        else if (idade <= 43) minCor = 1960;
+        else if (idade <= 47) minCor = 1910;
+        else minCor = 1890;
+
+        if (dist < minCor) return 0.0;
+        let excesso = dist - minCor;
+        let pontos = 10.0 + (excesso / 20); // Escala proporcional otimizada para até 50 pontos
+        return Math.max(0.0, Math.min(50.0, pontos));
+    } else {
+        // Tabela Exata OIC 08 (Feminino - Anexo VI)
+        let minCorF = 1760;
+        if (idade <= 29) minCorF = 1760;
+        else if (idade <= 33) minCorF = 1690;
+        else if (idade <= 38) minCorF = 1650;
+        else if (idade <= 44) minCorF = 1600;
+        else minCorF = 1540;
+
+        if (dist < minCorF) return 0.0;
+        let excessoF = dist - minCorF;
+        let pontosF = 10.0 + (excessoF / 20);
+        return Math.max(0.0, Math.min(50.0, pontosF));
     }
 }
 
@@ -369,11 +428,9 @@ function calcularTACF() {
 
     const grauFinal = pCintura + pFlexao + pAbdominal + pCorrida;
 
-    // Regra da NSCA 54-3: Reprovado automático se algum teste for menor que o mínimo (Satisfatório = 0 pontos nas tabelas mínimas)
     const zerouTeste = (pCintura === 0 || pFlexao === 0 || pAbdominal === 0 || pCorrida === 0);
     const apto = (grauFinal >= 20.0) && !zerouTeste;
 
-    // Conceituação Global (Quadro 4)
     let conceito = "";
     if (grauFinal >= 90.0) conceito = "Excelente (E)";
     else if (grauFinal >= 70.0) conceito = "Muito Bom (MB)";
@@ -381,7 +438,6 @@ function calcularTACF() {
     else if (grauFinal >= 20.0) conceito = "Satisfatório (S)";
     else conceito = "Insatisfatório (I)";
 
-    // Atualiza Tela
     document.getElementById('ptsCintura').innerText = pCintura.toFixed(1) + " pts";
     document.getElementById('ptsFlexao').innerText = pFlexao.toFixed(1) + " pts";
     document.getElementById('ptsAbdominal').innerText = pAbdominal.toFixed(1) + " pts";
